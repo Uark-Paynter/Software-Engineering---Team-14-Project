@@ -1,0 +1,14 @@
+[
+{
+  "directory": "C:/Users/dylan/OneDrive/Documents/_ActualDocuments/College+Work/Courses/SoftwareEng/LaserTagApp/build",
+  "command": "C:\\msys64\\mingw64\\bin\\g++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64 @CMakeFiles/LaserTagApp.dir/includes_CXX.rsp -g -std=gnu++17 -o CMakeFiles\\LaserTagApp.dir\\LaserTagApp_autogen\\mocs_compilation.cpp.obj -c C:\\Users\\dylan\\OneDrive\\Documents\\_ActualDocuments\\College+Work\\Courses\\SoftwareEng\\LaserTagApp\\build\\LaserTagApp_autogen\\mocs_compilation.cpp",
+  "file": "C:/Users/dylan/OneDrive/Documents/_ActualDocuments/College+Work/Courses/SoftwareEng/LaserTagApp/build/LaserTagApp_autogen/mocs_compilation.cpp",
+  "output": "CMakeFiles/LaserTagApp.dir/LaserTagApp_autogen/mocs_compilation.cpp.obj"
+},
+{
+  "directory": "C:/Users/dylan/OneDrive/Documents/_ActualDocuments/College+Work/Courses/SoftwareEng/LaserTagApp/build",
+  "command": "C:\\msys64\\mingw64\\bin\\g++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64 @CMakeFiles/LaserTagApp.dir/includes_CXX.rsp -g -std=gnu++17 -o CMakeFiles\\LaserTagApp.dir\\main.cpp.obj -c C:\\Users\\dylan\\OneDrive\\Documents\\_ActualDocuments\\College+Work\\Courses\\SoftwareEng\\LaserTagApp\\main.cpp",
+  "file": "C:/Users/dylan/OneDrive/Documents/_ActualDocuments/College+Work/Courses/SoftwareEng/LaserTagApp/main.cpp",
+  "output": "CMakeFiles/LaserTagApp.dir/main.cpp.obj"
+}
+]

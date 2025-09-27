@@ -36,7 +36,7 @@ Misc Support files:
   ./filename.exe
 
 
-For db access:
+For db Access:
 -making sure the pqsl libraries are there
 sudo apt update
 sudo apt install libpq-dev

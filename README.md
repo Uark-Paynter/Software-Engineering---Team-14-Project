@@ -37,20 +37,20 @@ Misc Support files:
 
 
 For db Access:
-- making sure the pqsl libraries are there
-sudo apt update
-sudo apt install libpq-dev
-- in case the normal command lines above don't work correctly run with the -get
-sudo apt-get update 
-sudo apt-get install libpq-dev
-- for qt
-sudo apt update
-sudo apt install qtbase5-dev
+making sure the pqsl libraries are there
+- sudo apt update
+- sudo apt install libpq-dev
+in case the normal command lines above don't work correctly run with the -get
+- sudo apt-get update 
+- sudo apt-get install libpq-dev
+for qt:
+- sudo apt update
+- sudo apt install qtbase5-dev
 
-- then to get the application on the folder to appear:
-g++ main3.cpp -o LaserTagApp -fPIC     $(pkg-config --cflags --libs Qt5Widgets) -lpq
-- finally to open the application:
-./LaserTagApp
+then to get the application on the folder to appear:
+- g++ main3.cpp -o LaserTagApp -fPIC     $(pkg-config --cflags --libs Qt5Widgets) -lpq
+finally to open the application:
+- ./LaserTagApp
   
 
   

@@ -1,3 +1,5 @@
+[NOTICE:] View as raw for better formatting.
+
 Files for Sprint 2 from Logan
 -Depends on: QT installation, Working VM (Cannot run on Windows environment), Python traffic generator (Photon github) for simulation
 

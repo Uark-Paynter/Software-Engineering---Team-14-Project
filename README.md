@@ -1,7 +1,12 @@
 [NOTICE:] View as raw for better formatting.
 
 Files for Sprint 2 from Logan
--Depends on: QT installation, Working VM (Cannot run on Windows environment), Python traffic generator (Photon github) for simulation
+-Depends on: QT installation, postgreSQL, Working VM (Cannot run on Windows environment), Python traffic generator (Photon github) for simulation
+
+-Install QT and postgreSQL from terminal:
+-sudo apt update
+-sudo apt install libpq-dev
+-sudo apt install qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools
 
 [NOTICE:] All of these files are meant for submission. Please ensure that all changes made to Dylan's program also reflect those made in my edit here. I have clearly labelled anything I edited in this version.
 [NOTICE:] I am including .exe files as well. If changes are made, please recompile before running the programs. Instructions for terminal compilation and run commands are below.
@@ -23,8 +28,8 @@ To run from terminal in VM:
 Game:
   g++ Game.cpp -o Game.cpp
 
-GUI:
-  g++ -fPIC GUI.cpp -o GUI.exe `pkg-config --cflags --libs Qt5Widgets`
+GUI (Main Program):
+  g++ -fPIC GUI.cpp -o GUI.exe `pkg-config --cflags --libs Qt5Widgets` -lpq
   ./GUI.exe
 
 Python Traffic Generator

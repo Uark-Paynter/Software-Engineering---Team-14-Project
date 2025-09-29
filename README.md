@@ -23,9 +23,6 @@ GUI (Main Program):
   g++ -fPIC main.cpp -o LaserTagApp `pkg-config --cflags --libs Qt5Widgets` -lpq
   ./LaserTagApp
 
-Python Traffic Generator
-  python3 ptg.py
-
 [Credits]
 UI for this project was made by Dylan.
 Database connection and connections were made by Bryan and Jeremiah.

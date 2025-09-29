@@ -10,18 +10,18 @@ View as raw for better formatting.
 This includes raw .cpp files for:
 - UDP Broadcast & Receiver (UDPBroadcaster) (UDPReceiver)
 - Gamemaster Program (Game.cpp)
-- GUI program that interacts and calls sockets (GUI.cpp)
+- GUI program that interacts and calls sockets (main.cpp)
 
 [NOTICE:] 
-Please compile (Game.cpp) before trying to start the game from (GUI.cpp).
+Please compile (Game.cpp) before trying to start the game from (main.cpp).
 
 To run from terminal in VM:
 Game:
   g++ Game.cpp -o Game.cpp
 
 GUI (Main Program):
-  g++ -fPIC GUI.cpp -o GUI.exe `pkg-config --cflags --libs Qt5Widgets` -lpq
-  ./GUI.exe
+  g++ -fPIC main.cpp -o LaserTagApp `pkg-config --cflags --libs Qt5Widgets` -lpq
+  ./LaserTagApp
 
 Python Traffic Generator
   python3 ptg.py

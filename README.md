@@ -29,3 +29,8 @@ Python Traffic Generator
 [NOTICE:] 
 There is a chance that after extracing the zip, the broadcaster files are automatically labeled as .txt files.
 These files need to have no extension in order to work, so renaming to exclude the extension may be needed.
+
+[Credits]
+UI for this project was made by Dylan
+Database connection and connections were made by Bryan and Jeremiah
+UDP socket programs were made by Logan

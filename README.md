@@ -1,4 +1,5 @@
-[NOTICE:] View as raw for better formatting.
+[NOTICE:]
+View as raw for better formatting.
 -Depends on: QT installation, postgreSQL, Working VM (Cannot run on Windows environment), Python traffic generator (Photon github) for simulation
 
 -Install QT and postgreSQL from terminal:
@@ -11,9 +12,10 @@ This includes raw .cpp files for:
 - Gamemaster Program (Game.cpp)
 - GUI program that interacts and calls sockets (GUI.cpp)
 
-[NOTICE:] Please compile (Game.cpp) before trying to start the game from (GUI.cpp).
-To run from terminal in VM:
+[NOTICE:] 
+Please compile (Game.cpp) before trying to start the game from (GUI.cpp).
 
+To run from terminal in VM:
 Game:
   g++ Game.cpp -o Game.cpp
 
@@ -23,3 +25,7 @@ GUI (Main Program):
 
 Python Traffic Generator
   python3 ptg.py
+
+[NOTICE:] 
+There is a chance that after extracing the zip, the broadcaster files are automatically labeled as .txt files.
+These files need to have no extension in order to work, so renaming to exclude the extension may be needed.

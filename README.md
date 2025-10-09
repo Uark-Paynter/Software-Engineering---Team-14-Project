@@ -17,7 +17,7 @@ Please compile (Game.cpp) before trying to start the game from (main.cpp).
 
 To run from terminal in VM:
 Game:
-  g++ Game.cpp -o Game.cpp
+  g++ Game.cpp -o Game
 
 GUI (Main Program):
   g++ -fPIC main.cpp -o LaserTagApp `pkg-config --cflags --libs Qt5Widgets` -lpq

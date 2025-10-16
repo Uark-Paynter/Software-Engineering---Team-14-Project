@@ -15,7 +15,7 @@ echo "Installing PostgreSQL + Qt5"
 sudo apt install -y libpq-dev qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools
 
 echo "Compiling Game.cpp"
-g++ -fPIC Game.cpp -o Game 
+g++ Game.cpp -o Game.exe 
 
 echo "Compiling main.cpp"
 g++ -fPIC main.cpp -o LaserTagApp $(pkg-config --cflags --libs Qt5Widgets) -lpq

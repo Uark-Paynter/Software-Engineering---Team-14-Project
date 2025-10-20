@@ -16,12 +16,12 @@ Install QT and postgreSQL from terminal:
 [NOTICE:] 
 Please compile (Game.cpp) before trying to start the game from (main.cpp).
 Game:
-  g++ Game.cpp -o Game.exe
-  ./Game.exe
+- g++ Game.cpp -o Game.exe
+- ./Game.exe
 
-GUI (Main Program):
-  g++ -fPIC main.cpp -o LaserTagApp `pkg-config --cflags --libs Qt5Widgets` -lpq
-  ./LaserTagApp
+Main Program:
+- g++ -fPIC main.cpp -o LaserTagApp `pkg-config --cflags --libs Qt5Widgets` -lpq
+- ./LaserTagApp
 
 [Credits]
 UI for this project was made by Dylan.

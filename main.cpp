@@ -1,9 +1,3 @@
-//Logan's Changes Made [Sprint 3]:
-//Re-added changes and fixes from previous sprint 2 main
-//Modified player structure to include EqID for each session. Not stored into DB.
-	//Added prompts to fill in EqID on player addition, broadcasts EqID instead of playerid now.
-//[UDP] Sync'd timers
-
 #include <QApplication>
 #include <QPushButton>
 #include <QWidget>
@@ -1063,4 +1057,5 @@ int main(int argc, char *argv[])
 
     splash.show();
     return app.exec();
+
 }

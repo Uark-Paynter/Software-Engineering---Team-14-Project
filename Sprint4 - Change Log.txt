@@ -1,0 +1,429 @@
+main.cpp Change Log - Sprint 4
+
+1)
+Update the player framework at the top to include a score value
+
+//Player Framework
+struct Player
+{
+    int id;
+    QString codename;
+    QString status;
+    int score = 0;
+};
+
+
+2)
+Update the text box setup for the game screen (second set of text boxes) under the start, Pause, End, and Lower Divider declarations
+
+//---------------- Text Boxes ----------------
+    QHBoxLayout gameBoxesLayout;
+    gameBoxesLayout.setSpacing(12);
+
+    //Terminal Box
+    QFrame gameStatusFrame;
+    gameStatusFrame.setFrameShape(QFrame::NoFrame);
+    gameStatusFrame.setStyleSheet("QFrame { border: 2px solid #403354; border-radius: 6px; background-color: #2a2139; }");
+    gameStatusFrame.setMinimumWidth(300);
+
+    QVBoxLayout gameStatusFrameLayout(&gameStatusFrame);
+    gameStatusFrameLayout.setContentsMargins(8,8,8,8);
+    gameStatusFrameLayout.setSpacing(4);
+
+    QTextEdit gameStatusBox;
+    gameStatusBox.setReadOnly(true);
+    gameStatusBox.setFrameShape(QFrame::NoFrame);
+    gameStatusBox.setStyleSheet("background: transparent; color: #eaeaea; border: none;");
+    gameStatusBox.setText("Game events will appear here...");
+    gameStatusFrameLayout.addWidget(&gameStatusBox);
+    gameBoxesLayout.addWidget(&gameStatusFrame, 2);
+
+
+    //Game Screen Team Box Setup
+    auto createTeamBox = [&](const QString& teamName, const QString& borderColor, QFrame*& frame, QLabel*& totalLabel, QListWidget*& nameList, QListWidget*& scoreList)
+    {
+        frame = new QFrame();
+        frame->setFrameShape(QFrame::NoFrame);
+        frame->setStyleSheet(QString("QFrame { border: 3px solid %1; border-radius: 6px; background-color: #2a2139; }").arg(borderColor));
+        frame->setMinimumWidth(220);
+
+        QVBoxLayout* mainLayout = new QVBoxLayout(frame);
+        mainLayout->setContentsMargins(6,6,6,6);
+        mainLayout->setSpacing(4);
+
+        QLabel* label = new QLabel(teamName);
+        QFont font = label->font();
+        font.setBold(true);
+        font.setUnderline(true);
+        label->setFont(font);
+        label->setStyleSheet("background: transparent; border: none; color: #f0f0f0;");
+        label->setAlignment(Qt::AlignCenter);
+
+        totalLabel = new QLabel("Score: 0");
+        totalLabel->setAlignment(Qt::AlignCenter);
+        totalLabel->setStyleSheet("background: transparent; border: none; color: #f0f0f0; font-weight: bold;");
+
+        QHBoxLayout* teamInnerLayout = new QHBoxLayout();
+        nameList = new QListWidget();
+        scoreList = new QListWidget();
+
+        nameList->setFrameShape(QFrame::NoFrame);
+        scoreList->setFrameShape(QFrame::NoFrame);
+        nameList->setStyleSheet("background: transparent; border: none; color: #f0f0f0;");
+        scoreList->setStyleSheet("background: transparent; border: none; color: #f0f0f0; text-align: right;");
+
+        teamInnerLayout->addWidget(nameList);
+        teamInnerLayout->addWidget(scoreList);
+
+        mainLayout->addWidget(label);
+        mainLayout->addWidget(totalLabel);
+        mainLayout->addLayout(teamInnerLayout);
+    };
+
+    //Create Team Boxes
+    QFrame* gameTeamAFrame;
+    QFrame* gameTeamBFrame;
+    QLabel* teamATotalLabel;
+    QLabel* teamBTotalLabel;
+    QListWidget* gameTeamANameList;
+    QListWidget* gameTeamAScoreList;
+    QListWidget* gameTeamBNameList;
+    QListWidget* gameTeamBScoreList;
+
+    createTeamBox("Team A", "#922f34", gameTeamAFrame, teamATotalLabel, gameTeamANameList, gameTeamAScoreList);
+    createTeamBox("Team B", "#4fb269", gameTeamBFrame, teamBTotalLabel, gameTeamBNameList, gameTeamBScoreList);
+
+    gameBoxesLayout.addWidget(gameTeamAFrame, 1);
+    gameBoxesLayout.addWidget(gameTeamBFrame, 1);
+    gameLayout.addLayout(&gameBoxesLayout);
+	
+	
+3)
+Update the Timer Logic section immediatily under the previous change.
+
+//---------------- Timer Logic ----------------
+    enum class GameState { Idle, Cooldown, Running, Paused, Ended };
+    GameState gameState = GameState::Idle;
+
+    //Score Flash
+    QTimer flashTimer;
+    flashTimer.setInterval(500);
+    bool flashVisible = true;
+    QString currentLeader = "";
+
+    //Main Timer
+    QTimer tick;
+    tick.setInterval(1000);
+
+    int cooldownRemaining = 0;
+    int gameRemaining = 0;
+    int savedGameRemaining = 0;
+
+    //Update Timer Text
+    auto updateTimerLabel = [&]()
+    {
+        if (gameState == GameState::Idle || gameState == GameState::Ended)
+        {
+            timerTitleLabel.setText("No Game in Progress");
+            timerValueLabel.setText("");
+        }
+        else if (gameState == GameState::Cooldown)
+        {
+            timerTitleLabel.setText("Starting In");
+            timerValueLabel.setText(QString("%1s").arg(cooldownRemaining));
+        }
+        else if (gameState == GameState::Running || gameState == GameState::Paused)
+        {
+            timerTitleLabel.setText("Time Remaining");
+            int mins = gameRemaining / 60;
+            int secs = gameRemaining % 60;
+            timerValueLabel.setText(QString("%1:%2").arg(mins, 2, 10, QChar('0')).arg(secs, 2, 10, QChar('0')));
+        }
+    };
+
+    std::function<void()> endGameRoutine;
+    std::function<void()> startCooldownThenRun;
+    std::function<void()> updateTeamDisplays;
+
+    //Reset Timer on Reset
+    endGameRoutine = [&]()
+    {
+        tick.stop();
+        gameState = GameState::Ended;
+        for (auto& p : teamAPlayers) p.status = "Ready";
+        for (auto& p : teamBPlayers) p.status = "Ready";
+
+        teamAList.clear();
+        for (const auto& p : teamAPlayers) teamAList.addItem(formatPlayer(p));
+        teamBList.clear();
+        for (const auto& p : teamBPlayers) teamBList.addItem(formatPlayer(p));
+
+        updateTeamDisplays();
+
+        updateTimerLabel();
+        gameStatusBox.append("Game ended.");
+    };
+
+    //Cooldown Timer
+    startCooldownThenRun = [&]()
+    {
+        cooldownRemaining = 5;
+        gameState = GameState::Cooldown;
+        updateTimerLabel();
+        tick.start();
+    };
+
+    //Game Timer
+    QObject::connect(&tick, &QTimer::timeout, [&]()
+    {
+        if (gameState == GameState::Cooldown)
+        {
+            cooldownRemaining--;
+            if (cooldownRemaining <= 0)
+            {
+                gameRemaining = (savedGameRemaining > 0 ? savedGameRemaining : 60);
+                gameState = GameState::Running;
+                updateTimerLabel();
+                gameStatusBox.append("Game started.");
+            }
+            else
+            {
+                updateTimerLabel();
+            }
+        }
+        else if (gameState == GameState::Running)
+        {
+            gameRemaining--;
+            if (gameRemaining <= 0)
+            {
+                endGameRoutine();
+            }
+            else
+            {
+                updateTimerLabel();
+            }
+        }
+    });
+
+    //Team Score Update
+    updateTeamDisplays = [&]()
+    {
+        auto sortByScore = [](const Player& a, const Player& b)
+        {
+            return a.score > b.score;
+        };
+
+        std::sort(teamAPlayers.begin(), teamAPlayers.end(), sortByScore);
+        std::sort(teamBPlayers.begin(), teamBPlayers.end(), sortByScore);
+
+        gameTeamANameList->clear();
+        gameTeamAScoreList->clear();
+        gameTeamBNameList->clear();
+        gameTeamBScoreList->clear();
+
+        int teamASum = 0, teamBSum = 0;
+        for (const auto& p : teamAPlayers)
+        {
+            QListWidgetItem* nameItem = new QListWidgetItem(QString("%1 (%2)").arg(p.codename).arg(p.status));
+            nameItem->setData(Qt::UserRole, p.codename);          // store codename for reliable lookup
+            gameTeamANameList->addItem(nameItem);
+
+            QListWidgetItem* scoreItem = new QListWidgetItem(QString::number(p.score));
+            scoreItem->setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
+            gameTeamAScoreList->addItem(scoreItem);
+
+            teamASum += p.score;
+        }
+        for (const auto& p : teamBPlayers)
+        {
+            QListWidgetItem* nameItem = new QListWidgetItem(QString("%1 (%2)").arg(p.codename).arg(p.status));
+            nameItem->setData(Qt::UserRole, p.codename);
+            gameTeamBNameList->addItem(nameItem);
+
+            QListWidgetItem* scoreItem = new QListWidgetItem(QString::number(p.score));
+            scoreItem->setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
+            gameTeamBScoreList->addItem(scoreItem);
+
+            teamBSum += p.score;
+        }
+
+        teamATotalLabel->setText(QString("Score: %1").arg(teamASum));
+        teamBTotalLabel->setText(QString("Score: %1").arg(teamBSum));
+
+        teamATotalLabel->setText(QString("Score: %1").arg(teamASum));
+        teamBTotalLabel->setText(QString("Score: %1").arg(teamBSum));
+
+
+        //Flashing Logic
+        QString newLeader;
+        if (teamASum > teamBSum) newLeader = "A";
+        else if (teamBSum > teamASum) newLeader = "B";
+        else newLeader = "";
+
+        if (newLeader != currentLeader)
+        {
+            currentLeader = newLeader;
+            flashVisible = true;
+            flashTimer.stop();
+
+            teamATotalLabel->setStyleSheet("background: transparent; border: none; color: #f0f0f0; font-weight: bold;");
+            teamBTotalLabel->setStyleSheet("background: transparent; border: none; color: #f0f0f0; font-weight: bold;");
+
+            if (currentLeader != "")
+                flashTimer.start();
+        }
+    };
+	
+	
+4)
+Update the Player Event Testing section under the End Game button logic
+
+//Player Event Testing (Double-Click Players to Change)
+    //Team A Handler
+    QObject::connect(gameTeamANameList, &QListWidget::itemDoubleClicked, [&](QListWidgetItem* item)
+    {
+        QString codename = item->data(Qt::UserRole).toString();
+
+        for (auto& p : teamAPlayers)
+        {
+            if (p.codename == codename)
+            {
+                if (p.status == "Active")
+                {
+                    p.status = "Tagged";
+                    gameStatusBox.append(p.codename + " tagged.");
+                    p.score += 10;
+                }
+                else
+                {
+                    p.status = "Active";
+                    gameStatusBox.append(p.codename + " reset to Active.");
+                }
+                break;
+            }
+        }
+
+        updateTeamDisplays();
+    });
+
+    //Team B Handler
+    QObject::connect(gameTeamBNameList, &QListWidget::itemDoubleClicked, [&](QListWidgetItem* item)
+    {
+        QString codename = item->data(Qt::UserRole).toString();
+
+        for (auto& p : teamBPlayers)
+        {
+            if (p.codename == codename)
+            {
+                if (p.status == "Active")
+                {
+                    p.status = "Tagged";
+                    gameStatusBox.append(p.codename + " tagged.");
+                    p.score += 10;
+                }
+                else
+                {
+                    p.status = "Active";
+                    gameStatusBox.append(p.codename + " reset to Active.");
+                }
+                break;
+            }
+        }
+
+        updateTeamDisplays();
+    });
+
+    //Team Score Flashing
+    QObject::connect(&flashTimer, &QTimer::timeout, [&]()
+    {
+        flashVisible = !flashVisible;
+
+        auto flashStyle = [&](QLabel* label)
+        {
+            if (flashVisible)
+                label->setStyleSheet("background: transparent; border: none; color: #ffea00; font-weight: bold;"); // yellow highlight
+            else
+                label->setStyleSheet("background: transparent; border: none; color: #f0f0f0; font-weight: bold;");
+        };
+
+        if (currentLeader == "A")
+        {
+            flashStyle(teamATotalLabel);
+            teamBTotalLabel->setStyleSheet("background: transparent; border: none; color: #f0f0f0; font-weight: bold;");
+        }
+        else if (currentLeader == "B")
+        {
+            flashStyle(teamBTotalLabel);
+            teamATotalLabel->setStyleSheet("background: transparent; border: none; color: #f0f0f0; font-weight: bold;");
+        }
+        else
+        {
+            teamATotalLabel->setStyleSheet("background: transparent; border: none; color: #f0f0f0; font-weight: bold;");
+            teamBTotalLabel->setStyleSheet("background: transparent; border: none; color: #f0f0f0; font-weight: bold;");
+        }
+    });
+
+
+5)
+Change the sections involving gameTeamAList or gameTeamBList in the logic for Ready Game, 
+
+//Ready Game
+    QObject::connect(&readyGameBtn, &QPushButton::clicked, [&]()
+    {
+        updateTeamDisplays();
+
+        teamAList.clear();
+		
+		
+//Game Start / Restart
+    QObject::connect(&gameStartBtn, &QPushButton::clicked, [&]()
+    {
+        if (gameStartBtn.text() == "Start")
+        {
+            if (gameState == GameState::Running || gameState == GameState::Cooldown)
+            {
+                gameStatusBox.append("Game is already running or in countdown.");
+                return;
+            }
+
+            for (auto& p : teamAPlayers) p.status = "Active";
+            for (auto& p : teamBPlayers) p.status = "Active";
+
+            updateTeamDisplays();
+
+            teamAList.clear();
+            for (const auto& p : teamAPlayers) teamAList.addItem(formatPlayer(p));
+            teamBList.clear();
+            for (const auto& p : teamBPlayers) teamBList.addItem(formatPlayer(p));
+
+            startCooldownThenRun();
+            gameStatusBox.append("Game starting.");
+            gameStartBtn.setText("Restart Game");
+        }
+        else
+        {
+            for (auto& p : teamAPlayers) p.status = "Active";
+            for (auto& p : teamBPlayers) p.status = "Active";
+
+            updateTeamDisplays();
+
+            teamAList.clear();
+			
+			
+//End Game
+    QObject::connect(&gameEndBtn, &QPushButton::clicked, [&]()
+    {
+        tick.stop();
+        gameState = GameState::Ended;
+
+        for (auto& p : teamAPlayers) p.status = "Ready";
+        for (auto& p : teamBPlayers) p.status = "Ready";
+
+        teamAList.clear();
+        for (const auto& p : teamAPlayers) teamAList.addItem(formatPlayer(p));
+        teamBList.clear();
+        for (const auto& p : teamBPlayers) teamBList.addItem(formatPlayer(p));
+
+        updateTeamDisplays();
+
+        updateTimerLabel();

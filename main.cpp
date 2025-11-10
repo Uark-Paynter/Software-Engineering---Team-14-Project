@@ -776,6 +776,9 @@ int main(int argc, char *argv[])
             startCooldownThenRun();
             gameStatusBox.append("Game starting.");
             gameStartBtn.setText("Restart Game");
+
+            //play random track
+            system("./randomtrack &");
         }
         else
         {
@@ -792,6 +795,9 @@ int main(int argc, char *argv[])
             startCooldownThenRun();
             gameStatusBox.append("Game restarted.");
             gameStartBtn.setText("Restart Game");
+
+            //play random track
+            system("./randomtrack &");
         }
     });
 
@@ -946,4 +952,5 @@ int main(int argc, char *argv[])
 
     splash.show();
     return app.exec();
+
 }

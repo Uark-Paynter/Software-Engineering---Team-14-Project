@@ -29,6 +29,10 @@ Game:
   g++ Game.cpp -o Game.exe
   ./Game.exe
 
+Random Track:
+  g++ randomtrack.cpp -o randomtrack `sdl2-config --cflags --libs` -lSDL2_mixer
+
+
 GUI (Main Program):
   g++ -fPIC main.cpp -o LaserTagApp `pkg-config --cflags --libs Qt5Widgets` -lpq
   ./LaserTagApp
